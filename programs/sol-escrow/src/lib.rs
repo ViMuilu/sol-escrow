@@ -24,7 +24,7 @@ pub mod sol_escrow {
         require_keys_eq!(escrow_account.taker, context.accounts.taker.key(), CustomError::Unauthorized);
 
         let amount = escrow_account.amount;
-        **context.accounts.escrow_account.to_account_info().try_borrow_mut_lamports()? -= amount;
+        **escrow_account.to_account_info().try_borrow_mut_lamports()? -= amount;
         **context.accounts.taker.try_borrow_mut_lamports()? += amount;
 
         msg!("{} lamports withdrawn by {}", amount, escrow_account.taker);
