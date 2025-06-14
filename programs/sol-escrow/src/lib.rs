@@ -30,6 +30,22 @@ pub mod sol_escrow {
         msg!("{} lamports withdrawn by {}", amount, escrow_account.taker);
         Ok(())
     }
+
+    pub fn cancel(context: Context<Cancel>) -> Result<()> {
+        let escrow_account = &mut context.accounts.escrow_account;
+        require_keys_eq!(
+            escrow_account.initializer,
+            context.accounts.initializer.key(),
+            CustomError::Unauthorized
+        );
+
+        let amount = escrow_account.amount;
+        **escrow_account.to_account_info().try_borrow_mut_lamports()? -= amount;
+        **context.accounts.initializer.try_borrow_mut_lamports()? += amount;
+
+        msg!("{} lamports returned to initializer {}", amount, escrow_account.initializer);
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -47,6 +63,14 @@ pub struct Withdraw<'info> {
     pub escrow_account: Account<'info, EscrowAccount>,
     #[account(mut)]
     pub taker: Signer<'info>,
+}
+
+#[derive(Accounts)]
+pub struct Cancel<'info> {
+    #[account(mut, has_one = initializer)]
+    pub escrow_account: Account<'info, EscrowAccount>,
+    #[account(mut)]
+    pub initializer: Signer<'info>,
 }
 
 #[account]
