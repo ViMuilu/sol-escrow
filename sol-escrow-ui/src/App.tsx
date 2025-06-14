@@ -3,6 +3,8 @@ import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Program, AnchorProvider, web3, BN } from "@coral-xyz/anchor";
 import idl from "../../target/idl/sol_escrow.json";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 
 import "./App.css";
 
@@ -81,21 +83,21 @@ function App() {
                   }}
                   className="escrow-form"
                 >
-                  <label>
-                    Taker Public Key:
-                    <input name="takerPubkey" type="text" required />
-                  </label>
-                  <label>
-                    Escrow Amount:
-                    <input
-                      name="amount"
-                      type="number"
-                      min="0"
-                      step="any"
-                      required
-                    />
-                  </label>
-                  <button type="submit">Initialize</button>
+                  <TextField
+                    label="Taker Public Key"
+                    name="takerPubkey"
+                    required
+                  />
+                  <TextField
+                    label="Escrow Amount"
+                    name="amount"
+                    type="number"
+                    inputProps={{ min: 0, step: "any" }}
+                    required
+                  />
+                  <Button variant="contained" color="primary" type="submit">
+                    Initialize
+                  </Button>
                 </form>
               </div>
             </div>
