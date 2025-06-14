@@ -6,14 +6,14 @@ A simple Solana escrow smart contract project built with [Anchor](https://book.a
 
 - Written in Rust using the Anchor framework
 - Basic escrow logic: initialize and withdraw instructions
-- TypeScript tests using Mocha and Chai
+- TypeScript tests using [Vitest](https://vitest.dev/)
 - Example of SOL airdrop and account setup
 
 ## Prerequisites
 
 - [Rust](https://www.rust-lang.org/tools/install)
 - [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools)
-- [Node.js](https://nodejs.org/) (v16+ recommended)
+- [Node.js](https://nodejs.org/) (v18+ recommended)
 - [Anchor CLI](https://book.anchor-lang.com/getting_started/installation.html)
 
 ## Setup
@@ -40,18 +40,30 @@ A simple Solana escrow smart contract project built with [Anchor](https://book.a
     solana config set --url localhost
     ```
 6. **Build the program**
+
+   In a new terminal window:
+
+    ```bash
+    solana-test-validator
+    ```
+
     ```bash
     anchor build
+    anchor deploy
     ```
 7. **Run tests**
     ```bash
-    anchor test
+    npm test
+    ```
+    or
+    ```bash
+    npx vitest run
     ```
 
 ## Project Structure
 
 - [`programs/sol-escrow/`](programs/sol-escrow/) - Rust smart contract (Anchor program)
-- [`tests/sol-escrow.ts`](tests/sol-escrow.ts) - TypeScript integration tests
+- [`tests/sol-escrow.test.ts`](tests/sol-escrow.test.ts) - TypeScript integration tests
 - [`target/idl/sol_escrow.json`](target/idl/sol_escrow.json) - Generated IDL for the program
 
 ## Notes

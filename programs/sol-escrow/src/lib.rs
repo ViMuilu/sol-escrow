@@ -20,30 +20,22 @@ pub mod sol_escrow {
     }
 
     pub fn withdraw(context: Context<Withdraw>) -> Result<()> {
-        let escrow_account = &mut context.accounts.escrow_account;
+        let escrow_account = &context.accounts.escrow_account;
         require_keys_eq!(escrow_account.taker, context.accounts.taker.key(), CustomError::Unauthorized);
 
-        let amount = escrow_account.amount;
-        **escrow_account.to_account_info().try_borrow_mut_lamports()? -= amount;
-        **context.accounts.taker.try_borrow_mut_lamports()? += amount;
-
-        msg!("{} lamports withdrawn by {}", amount, escrow_account.taker);
+        msg!("{} lamports withdrawn by {}", escrow_account.amount, escrow_account.taker);
         Ok(())
     }
 
     pub fn cancel(context: Context<Cancel>) -> Result<()> {
-        let escrow_account = &mut context.accounts.escrow_account;
+        let escrow_account = &context.accounts.escrow_account;
         require_keys_eq!(
             escrow_account.initializer,
             context.accounts.initializer.key(),
             CustomError::Unauthorized
         );
 
-        let amount = escrow_account.amount;
-        **escrow_account.to_account_info().try_borrow_mut_lamports()? -= amount;
-        **context.accounts.initializer.try_borrow_mut_lamports()? += amount;
-
-        msg!("{} lamports returned to initializer {}", amount, escrow_account.initializer);
+        msg!("{} lamports returned to initializer {}", escrow_account.amount, escrow_account.initializer);
         Ok(())
     }
 }
@@ -59,7 +51,7 @@ pub struct Initialize<'info> {
 
 #[derive(Accounts)]
 pub struct Withdraw<'info> {
-    #[account(mut, has_one = taker)]
+    #[account(mut, has_one = taker, close = taker)]
     pub escrow_account: Account<'info, EscrowAccount>,
     #[account(mut)]
     pub taker: Signer<'info>,
@@ -67,7 +59,7 @@ pub struct Withdraw<'info> {
 
 #[derive(Accounts)]
 pub struct Cancel<'info> {
-    #[account(mut, has_one = initializer)]
+    #[account(mut, has_one = initializer, close = initializer)]
     pub escrow_account: Account<'info, EscrowAccount>,
     #[account(mut)]
     pub initializer: Signer<'info>,
