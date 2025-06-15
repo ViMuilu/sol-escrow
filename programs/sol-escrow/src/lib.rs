@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("3vXTDchzLSC683QqkdBT8VYWk2baJXMEtgTYoXaqFjGy");
+declare_id!("DcUJPJZDTW9pSFmfpxoQkedaAv3UCdbhDLEHHiK2rZBx");
 
 #[program]
 pub mod sol_escrow {
@@ -42,17 +42,25 @@ pub mod sol_escrow {
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
-    #[account(init, payer = initializer, space = 8 + 32 + 32 + 8)]
-    pub escrow_account: Account<'info, EscrowAccount>,
+    #[account(
+        init,
+        payer = initializer,
+        space = 8 + Escrow::LEN,
+        seeds = [b"escrow", initializer.key().as_ref()],
+        bump
+    )]
+    pub escrow_account: Account<'info, Escrow>,
+
     #[account(mut)]
     pub initializer: Signer<'info>,
+
     pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
 pub struct Withdraw<'info> {
     #[account(mut, has_one = taker, close = taker)]
-    pub escrow_account: Account<'info, EscrowAccount>,
+    pub escrow_account: Account<'info, Escrow>,
     #[account(mut)]
     pub taker: Signer<'info>,
 }
@@ -60,16 +68,20 @@ pub struct Withdraw<'info> {
 #[derive(Accounts)]
 pub struct Cancel<'info> {
     #[account(mut, has_one = initializer, close = initializer)]
-    pub escrow_account: Account<'info, EscrowAccount>,
+    pub escrow_account: Account<'info, Escrow>,
     #[account(mut)]
     pub initializer: Signer<'info>,
 }
 
 #[account]
-pub struct EscrowAccount {
+pub struct Escrow {
     pub initializer: Pubkey,
     pub taker: Pubkey,
     pub amount: u64,
+}
+
+impl Escrow {
+    pub const LEN: usize = 32 + 32 + 8;
 }
 
 #[error_code]

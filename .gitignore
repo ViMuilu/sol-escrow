@@ -6,3 +6,6 @@ node_modules
 test-ledger
 .yarn
 .env
+# Solana keypairs
+*.json
+!src/idl/*.json

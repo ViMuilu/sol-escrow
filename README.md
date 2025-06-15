@@ -20,40 +20,82 @@ A simple Solana escrow smart contract project built with [Anchor](https://book.a
 ## Setup
 
 1. **Clone the repository**
+
    ```bash
    git clone <this-repo-url>
    cd sol_escrow
    ```
+
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
+
 3. **Install Anchor CLI**
+
    ```bash
    cargo install --git https://github.com/coral-xyz/anchor --tag v0.31.1 anchor-cli --locked
    ```
-4. **Set up your Solana keypair**
-   ```bash
-   solana-keygen new
-   ```
-5. **Configure Solana to use localnet**
-   ```bash
-   solana config set --url localhost
-   ```
-6. **Build the program**
 
-   In a new terminal window:
+4. **Start the Solana test validator**
+
+   Open a new terminal window and run:
 
    ```bash
    solana-test-validator
    ```
+
+5. **Set up your Solana keypairs for test validator**
+
+   In a separate terminal, generate wallets for each role:
+
+   ```bash
+   solana-keygen new --outfile ~/.config/solana/initializer.json
+   solana-keygen new --outfile ~/.config/solana/taker.json
+   solana-keygen new --outfile ~/.config/solana/escrow.json
+   ```
+
+   Then fund each wallet using the test validator:
+
+   ```bash
+   solana airdrop 5 ~/.config/solana/initializer.json --url localhost
+   solana airdrop 5 ~/.config/solana/taker.json --url localhost
+   solana airdrop 5 ~/.config/solana/escrow.json --url localhost
+   ```
+
+   If the airdrop hangs
+
+   ```bash
+   solana-test-validator --reset
+   ```
+
+   You can switch between wallets for CLI commands like this:
+
+   ```bash
+   solana config set --keypair ~/.config/solana/initializer.json
+   ```
+
+   Or use the `--keypair` flag for one-off commands:
+
+   ```bash
+   solana balance --keypair ~/.config/solana/taker.json
+   ```
+
+6. **Configure Solana to use localnet**
+
+   ```bash
+   solana config set --url localhost
+   ```
+
+7. **Build and deploy the program**
 
    ```bash
    anchor build
    anchor deploy
    ```
 
-7. **Run tests**
+8. **Run tests**
    ```bash
    npm test
    ```
@@ -61,6 +103,76 @@ A simple Solana escrow smart contract project built with [Anchor](https://book.a
    ```bash
    npx vitest run
    ```
+
+<details>
+<summary><strong>How to Create All Necessary Wallets for Development</strong></summary>
+
+You may want multiple wallets for testing different roles (e.g., initializer, taker, escrow). Here’s how to create and manage them:
+
+### 1. **Create Multiple Keypairs**
+
+Generate a new wallet for each role:
+
+```bash
+solana-keygen new --outfile ~/.config/solana/initializer.json
+solana-keygen new --outfile ~/.config/solana/taker.json
+solana-keygen new --outfile ~/.config/solana/escrow.json
+```
+
+### 2. **Airdrop SOL to Each Wallet**
+
+Make sure your local validator is running, then fund each wallet:
+
+```bash
+solana airdrop 5 ~/.config/solana/initializer.json --url localhost
+solana airdrop 5 ~/.config/solana/taker.json --url localhost
+solana airdrop 5 ~/.config/solana/escrow.json --url localhost
+```
+
+Or, to airdrop by address:
+
+```bash
+solana airdrop 5 <WALLET_ADDRESS> --url localhost
+```
+
+Get the address with:
+
+```bash
+solana-keygen pubkey ~/.config/solana/initializer.json
+```
+
+### 3. **Switch Between Wallets in CLI**
+
+Set the active wallet for CLI commands:
+
+```bash
+solana config set --keypair ~/.config/solana/initializer.json
+```
+
+Or use `--keypair` for one-off commands:
+
+```bash
+solana balance --keypair ~/.config/solana/taker.json
+```
+
+### 4. **Use Wallets in Scripts/Frontend**
+
+In Node.js/TypeScript:
+
+```js
+const { Keypair } = require("@solana/web3.js");
+const fs = require("fs");
+const secret = JSON.parse(fs.readFileSync("/path/to/initializer.json"));
+const keypair = Keypair.fromSecretKey(Uint8Array.from(secret));
+```
+
+### 5. **(Optional) Import into Browser Wallets**
+
+If you want to use these wallets in Phantom/Brave:
+
+- Open the wallet extension, choose "Import Private Key," and paste the array from your `.json` file.
+
+</details>
 
 ## UI (Frontend)
 

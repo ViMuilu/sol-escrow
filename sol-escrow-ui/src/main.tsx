@@ -9,9 +9,11 @@ import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
+import { Buffer } from "buffer";
 
 const wallets = [new PhantomWalletAdapter()];
 const endpoint = "http://127.0.0.1:8899"; // or devnet/mainnet
+window.Buffer = Buffer;
 
 const theme = createTheme({});
 
