@@ -7,10 +7,9 @@ type Props = {
 };
 
 export default function InitializeEscrowForm({ onInitialize }: Props) {
-  const [escrowAccountPubkey, setEscrowAccountPubkey] = useState("");
-  const [initializerPubkey, setInitializerPubkey] = useState("");
   const [amount, setAmount] = useState<number>(0);
   const [submitted, setSubmitted] = useState(false);
+  const [taker, setTaker] = useState("");
 
   return (
     <form
@@ -23,27 +22,21 @@ export default function InitializeEscrowForm({ onInitialize }: Props) {
       onSubmit={async (e) => {
         e.preventDefault();
         setSubmitted(false);
-        await onInitialize(amount, initializerPubkey);
+        await onInitialize(amount, taker);
         setSubmitted(true);
       }}
     >
-      <TextField
-        label="Escrow Account Public Key"
-        value={escrowAccountPubkey}
-        onChange={(e) => setEscrowAccountPubkey(e.target.value)}
-        required
-      />
-      <TextField
-        label="Initializer Public Key"
-        value={initializerPubkey}
-        onChange={(e) => setInitializerPubkey(e.target.value)}
-        required
-      />
       <TextField
         label="Escrow Amount (lamports)"
         type="number"
         value={amount}
         onChange={(e) => setAmount(Number(e.target.value))}
+        required
+      />
+      <TextField
+        label="Taker Public Key"
+        value={taker}
+        onChange={(e) => setTaker(e.target.value)}
         required
       />
       <Button variant="contained" color="primary" type="submit">

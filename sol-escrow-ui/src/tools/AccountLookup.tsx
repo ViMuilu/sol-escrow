@@ -1,57 +1,102 @@
-import React, { useState } from "react";
-import { Program } from "@coral-xyz/anchor";
+import React, { useState, useMemo } from "react";
+import { Program, web3 } from "@coral-xyz/anchor";
 
 type Props = {
   program: Program | null;
+  wallet: any; // Your wallet adapter
 };
 
-const AccountLookup: React.FC<Props> = ({ program }) => {
-  const [account, setAccount] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
-  const [result, setResult] = useState<any>(null);
+const AccountWithdraw: React.FC<Props> = ({ program, wallet }) => {
+  const [initializer, setInitializer] = useState("");
+  const [withdrawLoading, setWithdrawLoading] = useState(false);
+  const [withdrawError, setWithdrawError] = useState<string | undefined>(
+    undefined
+  );
+  const [withdrawSuccess, setWithdrawSuccess] = useState<string | undefined>(
+    undefined
+  );
 
-  const handleLookup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(undefined);
-    setResult(null);
+  // Derive the escrow PDA from the initializer public key
+  const derivedPda = useMemo(() => {
+    if (!initializer || !program) return "";
+    try {
+      const [pda] = web3.PublicKey.findProgramAddressSync(
+        [Buffer.from("escrow"), new web3.PublicKey(initializer).toBuffer()],
+        program.programId
+      );
+      return pda.toBase58();
+    } catch {
+      return "";
+    }
+  }, [initializer, program]);
 
+  const handleWithdraw = async () => {
+    setWithdrawLoading(true);
+    setWithdrawError(undefined);
+    setWithdrawSuccess(undefined);
     try {
       if (!program) throw new Error("Program not loaded");
-      const accountInfo = await program.account.escrow.fetch(account.trim());
-      setResult(accountInfo);
+      if (!wallet?.publicKey) throw new Error("Wallet not connected");
+      if (!initializer) throw new Error("No initializer public key provided");
+      if (!derivedPda) throw new Error("Could not derive escrow PDA");
+
+      await program.methods
+        .withdraw()
+        .accounts({
+          escrowAccount: new web3.PublicKey(derivedPda),
+          taker: wallet.publicKey,
+        })
+        .rpc();
+
+      setWithdrawSuccess("Withdraw successful!");
     } catch (err: any) {
-      setError(err.message || "Error looking up account");
+      setWithdrawError(err.message || "Withdraw failed");
     } finally {
-      setLoading(false);
+      setWithdrawLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleLookup} style={{ maxWidth: 400, margin: "0 auto" }}>
-      <label htmlFor="escrow-account">Escrow Account Address</label>
+    <form
+      style={{ maxWidth: 400, margin: "0 auto" }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleWithdraw();
+      }}
+    >
+      <label htmlFor="initializer-public-key" style={{ marginTop: 16 }}>
+        Initializer Public Key
+      </label>
       <input
-        id="escrow-account"
+        id="initializer-public-key"
         type="text"
-        value={account}
-        onChange={(e) => setAccount(e.target.value)}
-        placeholder="Enter escrow account address"
+        value={initializer}
+        onChange={(e) => setInitializer(e.target.value)}
+        placeholder="Enter initializer public key"
         style={{ width: "100%", marginBottom: 8 }}
-        disabled={loading}
+        disabled={withdrawLoading}
         required
       />
-      <button type="submit" disabled={loading || !account.trim()}>
-        {loading ? "Looking up..." : "Lookup"}
+      {derivedPda && (
+        <div style={{ marginTop: 8 }}>
+          Escrow PDA: <code>{derivedPda}</code>
+        </div>
+      )}
+      <button
+        type="submit"
+        disabled={withdrawLoading || !initializer || !derivedPda}
+        style={{ marginTop: 8 }}
+      >
+        {withdrawLoading ? "Withdrawing..." : "Withdraw"}
       </button>
-      {error && <div style={{ color: "red", marginTop: 8 }}>{error}</div>}
-      {result && (
-        <pre style={{ marginTop: 8, background: "#f5f5f5", padding: 8 }}>
-          {JSON.stringify(result, null, 2)}
-        </pre>
+      {withdrawError && (
+        <div style={{ color: "red", marginTop: 8 }}>{withdrawError}</div>
+      )}
+      {withdrawSuccess && (
+        <div style={{ color: "green", marginTop: 8 }}>{withdrawSuccess}</div>
       )}
     </form>
   );
 };
 
-export default AccountLookup;
+export default AccountWithdraw;

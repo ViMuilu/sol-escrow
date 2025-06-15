@@ -73,7 +73,7 @@ function App() {
       );
 
       await program.methods
-        .initialize(new PublicKey(takerInput), new BN(amount))
+        .initialize(new web3.PublicKey(takerInput), new BN(amount))
         .accounts({
           escrowAccount: escrowPda,
           initializer: wallet.publicKey,
@@ -95,7 +95,7 @@ function App() {
         <WalletMultiButton />
         <div className="escrow-container">
           <InitializeEscrowForm onInitialize={handleInitialize} />
-          <AccountLookup program={program} />
+          <AccountLookup program={program} wallet={wallet} />
           {wallet.connected && (
             <div>Wallet: {wallet.publicKey?.toBase58()}</div>
           )}
