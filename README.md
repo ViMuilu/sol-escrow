@@ -53,7 +53,6 @@ A simple Solana escrow smart contract project built with [Anchor](https://book.a
    ```bash
    solana-keygen new --outfile ~/.config/solana/initializer.json
    solana-keygen new --outfile ~/.config/solana/taker.json
-   solana-keygen new --outfile ~/.config/solana/escrow.json
    ```
 
    Then fund each wallet using the test validator:
@@ -61,7 +60,6 @@ A simple Solana escrow smart contract project built with [Anchor](https://book.a
    ```bash
    solana airdrop 5 ~/.config/solana/initializer.json --url localhost
    solana airdrop 5 ~/.config/solana/taker.json --url localhost
-   solana airdrop 5 ~/.config/solana/escrow.json --url localhost
    ```
 
    If the airdrop hangs
@@ -107,7 +105,7 @@ A simple Solana escrow smart contract project built with [Anchor](https://book.a
 <details>
 <summary><strong>How to Create All Necessary Wallets for Development</strong></summary>
 
-You may want multiple wallets for testing different roles (e.g., initializer, taker, escrow). Here’s how to create and manage them:
+You may want multiple wallets for testing different roles (e.g., initializer, taker). Here’s how to create and manage them:
 
 ### 1. **Create Multiple Keypairs**
 
@@ -116,7 +114,6 @@ Generate a new wallet for each role:
 ```bash
 solana-keygen new --outfile ~/.config/solana/initializer.json
 solana-keygen new --outfile ~/.config/solana/taker.json
-solana-keygen new --outfile ~/.config/solana/escrow.json
 ```
 
 ### 2. **Airdrop SOL to Each Wallet**
@@ -126,7 +123,6 @@ Make sure your local validator is running, then fund each wallet:
 ```bash
 solana airdrop 5 ~/.config/solana/initializer.json --url localhost
 solana airdrop 5 ~/.config/solana/taker.json --url localhost
-solana airdrop 5 ~/.config/solana/escrow.json --url localhost
 ```
 
 Or, to airdrop by address:
