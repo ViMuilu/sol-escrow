@@ -9,6 +9,7 @@ import { Program, AnchorProvider, web3, BN } from "@coral-xyz/anchor";
 import idl from "../../target/idl/sol_escrow.json";
 import AccountLookup from "./tools/AccountLookup";
 import InitializeEscrowForm from "./tools/InitializeEscrow";
+import FiatSelector from "./tools/FiatSelector";
 
 import "./App.css";
 import { PublicKey } from "@solana/web3.js";
@@ -19,7 +20,8 @@ function App() {
   const { connection } = useConnection();
   const wallet = useWallet();
 
-  const [error, setError] = useState<string | null>(null);
+  const [fiat, setFiat] = useState("USD");
+  const [solPrice, setSolPrice] = useState<number | null>(null);
 
   const provider = useMemo(() => {
     if (
@@ -46,13 +48,11 @@ function App() {
     return new Program(idl as any, provider);
   }, [provider]);
 
-  // Handler for InitializeEscrowForm
   const handleInitialize = async (amount: number, takerInput: string) => {
     if (!program || !wallet.publicKey) return;
 
-    // Input validation
     try {
-      new PublicKey(takerInput); // throws if invalid
+      new PublicKey(takerInput);
     } catch {
       alert("Invalid taker public key");
       return;
@@ -91,11 +91,30 @@ function App() {
   return (
     <ConnectionProvider endpoint={LOCALNET_RPC}>
       <div>
-        <h1>Sol Escrow UI</h1>
+        <h1
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          Sol Escrow UI
+          <FiatSelector
+            fiat={fiat}
+            setFiat={setFiat}
+            solPrice={solPrice}
+            setSolPrice={setSolPrice}
+          />
+        </h1>
         <WalletMultiButton />
         <div className="escrow-container">
           <InitializeEscrowForm onInitialize={handleInitialize} />
-          <AccountLookup program={program} wallet={wallet} />
+          <AccountLookup
+            program={program}
+            wallet={wallet}
+            fiat={fiat}
+            solPrice={solPrice}
+          />
           {wallet.connected && (
             <div>Wallet: {wallet.publicKey?.toBase58()}</div>
           )}

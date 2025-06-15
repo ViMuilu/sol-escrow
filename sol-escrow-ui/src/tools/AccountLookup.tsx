@@ -1,12 +1,19 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Program, web3 } from "@coral-xyz/anchor";
 
 type Props = {
   program: Program | null;
-  wallet: any; // Your wallet adapter
+  wallet: any;
+  fiat: string;
+  solPrice: number | null;
 };
 
-const AccountWithdraw: React.FC<Props> = ({ program, wallet }) => {
+const AccountWithdraw: React.FC<Props> = ({
+  program,
+  wallet,
+  fiat,
+  solPrice,
+}) => {
   const [initializer, setInitializer] = useState("");
   const [withdrawLoading, setWithdrawLoading] = useState(false);
   const [withdrawError, setWithdrawError] = useState<string | undefined>(
@@ -15,8 +22,8 @@ const AccountWithdraw: React.FC<Props> = ({ program, wallet }) => {
   const [withdrawSuccess, setWithdrawSuccess] = useState<string | undefined>(
     undefined
   );
+  const [escrowAmount, setEscrowAmount] = useState<number | null>(null);
 
-  // Derive the escrow PDA from the initializer public key
   const derivedPda = useMemo(() => {
     if (!initializer || !program) return "";
     try {
@@ -29,6 +36,22 @@ const AccountWithdraw: React.FC<Props> = ({ program, wallet }) => {
       return "";
     }
   }, [initializer, program]);
+
+  useEffect(() => {
+    const fetchEscrow = async () => {
+      setEscrowAmount(null);
+      if (!program || !derivedPda) return;
+      try {
+        const escrowAccount = await (program.account as any).escrow.fetch(
+          derivedPda
+        );
+        setEscrowAmount(Number(escrowAccount.amount));
+      } catch {
+        setEscrowAmount(null);
+      }
+    };
+    fetchEscrow();
+  }, [program, derivedPda]);
 
   const handleWithdraw = async () => {
     setWithdrawLoading(true);
@@ -56,6 +79,12 @@ const AccountWithdraw: React.FC<Props> = ({ program, wallet }) => {
     }
   };
 
+  // --- Fiat value calculation ---
+  const solAmount =
+    escrowAmount !== null ? escrowAmount / web3.LAMPORTS_PER_SOL : null;
+  const fiatValue =
+    solAmount !== null && solPrice !== null ? solAmount * solPrice : null;
+
   return (
     <form
       style={{ maxWidth: 400, margin: "0 auto" }}
@@ -80,6 +109,29 @@ const AccountWithdraw: React.FC<Props> = ({ program, wallet }) => {
       {derivedPda && (
         <div style={{ marginTop: 8 }}>
           Escrow PDA: <code>{derivedPda}</code>
+        </div>
+      )}
+      {escrowAmount !== null && (
+        <div style={{ marginTop: 8 }}>
+          Escrow Amount:{" "}
+          <strong>
+            {solAmount?.toLocaleString(undefined, {
+              maximumFractionDigits: 9,
+            })}{" "}
+            SOL ({escrowAmount} lamports)
+          </strong>
+          {fiatValue !== null && (
+            <div style={{ marginTop: 4 }}>
+              ≈{" "}
+              <strong>
+                {fiatValue.toLocaleString(undefined, {
+                  style: "currency",
+                  currency: fiat,
+                  maximumFractionDigits: 2,
+                })}
+              </strong>
+            </div>
+          )}
         </div>
       )}
       <button
