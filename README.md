@@ -1,6 +1,19 @@
-# sol-escrow
+# Sol Escrow
 
 A simple Solana escrow smart contract project built with [Anchor](https://book.anchor-lang.com/) to learn the basics of Solana smart contracts and Rust.
+
+<details>
+  <summary><strong>Show Screenshots demos</strong></summary>
+
+### Light Mode
+
+![Sol Escrow Light Mode](./screenshots/light.png)
+
+### Dark Mode
+
+![Sol Escrow Dark Mode](./screenshots/dark.png)
+
+</details>
 
 ## Features
 
