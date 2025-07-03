@@ -8,19 +8,12 @@ import { Program, AnchorProvider, web3, BN } from "@coral-xyz/anchor";
 import idl from "../../target/idl/sol_escrow.json";
 import AccountLookup from "./tools/AccountLookup";
 import InitializeEscrowForm from "./tools/InitializeEscrow";
-import FiatSelector from "./tools/FiatSelector";
 import { getNeonTheme } from "./theme/neonTheme";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import "./App.css";
 import { PublicKey } from "@solana/web3.js";
-import {
-  ThemeProvider,
-  CssBaseline,
-  IconButton,
-  Box,
-  Typography,
-} from "@mui/material";
-import { Brightness4, Brightness7 } from "@mui/icons-material";
+import { ThemeProvider, CssBaseline, Box } from "@mui/material";
+import StyledHeader from "./components/StyledHeader";
 
 const LOCALNET_RPC = "http://localhost:8899";
 
@@ -115,50 +108,14 @@ function App() {
       <CssBaseline />
       <ConnectionProvider endpoint={LOCALNET_RPC}>
         <Box sx={{ px: 2, py: 3 }}>
-          {/* Stylized Header */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              mb: 4,
-              borderRadius: 3,
-              px: 3,
-              py: 2,
-              background: darkMode
-                ? "linear-gradient(90deg, #2a003f 0%, #1a1a2e 100%)"
-                : "linear-gradient(90deg, #eaffea 0%, #f8f8ff 100%)",
-              boxShadow: darkMode ? "0 0 24px #a259f7" : "0 0 16px #39ff14",
-            }}
-          >
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: 800,
-                letterSpacing: 1,
-                color: darkMode ? "#fff" : "#000", // White in dark, black in light
-                fontFamily: "Detacher",
-              }}
-            >
-              Sol Escrow
-            </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <FiatSelector
-                fiat={fiat}
-                setFiat={setFiat}
-                solPrice={solPrice}
-                setSolPrice={setSolPrice}
-              />
-              <IconButton
-                onClick={() => setDarkMode((prev) => !prev)}
-                color="inherit"
-                aria-label="toggle dark mode"
-                size="large"
-              >
-                {darkMode ? <Brightness7 /> : <Brightness4 />}
-              </IconButton>
-            </Box>
-          </Box>
+          <StyledHeader
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
+            fiat={fiat}
+            setFiat={setFiat}
+            solPrice={solPrice}
+            setSolPrice={setSolPrice}
+          />
           <WalletMultiButton />
           <div className="escrow-container">
             <InitializeEscrowForm onInitialize={handleInitialize} />
