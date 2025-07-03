@@ -1,24 +1,19 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   useWallet,
   useConnection,
   ConnectionProvider,
 } from "@solana/wallet-adapter-react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Program, AnchorProvider, web3, BN } from "@coral-xyz/anchor";
 import idl from "../../target/idl/sol_escrow.json";
 import AccountLookup from "./tools/AccountLookup";
 import InitializeEscrowForm from "./tools/InitializeEscrow";
 import FiatSelector from "./tools/FiatSelector";
-
+import { getNeonTheme } from "./theme/neonTheme";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import "./App.css";
 import { PublicKey } from "@solana/web3.js";
-import {
-  ThemeProvider,
-  createTheme,
-  CssBaseline,
-  IconButton,
-} from "@mui/material";
+import { ThemeProvider, CssBaseline, IconButton, Button } from "@mui/material";
 import { Brightness4, Brightness7 } from "@mui/icons-material";
 
 const LOCALNET_RPC = "http://localhost:8899";
@@ -33,15 +28,7 @@ function App() {
   // Theme state
   const [darkMode, setDarkMode] = useState(true);
 
-  const theme = useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode: darkMode ? "dark" : "light",
-        },
-      }),
-    [darkMode]
-  );
+  const theme = useMemo(() => getNeonTheme(darkMode), [darkMode]);
 
   const provider = useMemo(() => {
     if (
@@ -108,6 +95,15 @@ function App() {
     }
   };
 
+  // Add this effect to toggle a "dark" class on the body for dark mode
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [darkMode]);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -150,6 +146,9 @@ function App() {
             {wallet.connected && (
               <div>Wallet: {wallet.publicKey?.toBase58()}</div>
             )}
+            <Button type="submit" fullWidth>
+              Withdraw
+            </Button>
           </div>
         </div>
       </ConnectionProvider>
