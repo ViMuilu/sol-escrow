@@ -13,6 +13,7 @@ import { Program, AnchorProvider, web3, BN } from "@coral-xyz/anchor";
 import idl from "../../target/idl/sol_escrow.json";
 import { PublicKey } from "@solana/web3.js";
 import "./App.css";
+import Footer from "./components/Footer";
 
 const LOCALNET_RPC = "http://localhost:8899";
 
@@ -109,63 +110,90 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <ConnectionProvider endpoint={LOCALNET_RPC}>
-        <Box sx={{ px: 2, py: 3 }}>
-          <StyledHeader
-            darkMode={darkMode}
-            setDarkMode={setDarkMode}
-            fiat={fiat}
-            setFiat={setFiat}
-            solPrice={solPrice}
-            setSolPrice={setSolPrice}
-          />
-          {/* Tab Buttons */}
-          <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
-            <Button
-              variant={activeTab === "initialize" ? "contained" : "outlined"}
-              color="primary"
-              onClick={() => setActiveTab("initialize")}
-              sx={{
-                flex: 1,
-                fontWeight: 700,
-                borderRadius: 2,
-                boxShadow: "none",
-                textTransform: "uppercase",
-              }}
-            >
-              Initialize Escrow
-            </Button>
-            <Button
-              variant={activeTab === "withdraw" ? "contained" : "outlined"}
-              color="primary"
-              onClick={() => setActiveTab("withdraw")}
-              sx={{
-                flex: 1,
-                fontWeight: 700,
-                borderRadius: 2,
-                boxShadow: "none",
-                textTransform: "uppercase",
-              }}
-            >
-              Withdraw
-            </Button>
-          </Box>
-          <div className="escrow-container">
-            {activeTab === "initialize" && (
-              <InitializeEscrowForm onInitialize={handleInitialize} />
-            )}
-            {activeTab === "withdraw" && (
-              <AccountLookup
-                program={program}
-                wallet={wallet}
-                fiat={fiat}
-                solPrice={solPrice}
-              />
-            )}
-            {wallet.connected && (
-              <div>Wallet: {wallet.publicKey?.toBase58()}</div>
-            )}
+        <div
+          style={{
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <StyledHeader
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+              fiat={fiat}
+              setFiat={setFiat}
+              solPrice={solPrice}
+              setSolPrice={setSolPrice}
+            />
+            <div className="escrow-container">
+              {/* Tab Buttons */}
+              <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+                <Button
+                  variant={
+                    activeTab === "initialize" ? "contained" : "outlined"
+                  }
+                  color="primary"
+                  onClick={() => setActiveTab("initialize")}
+                  sx={{
+                    flex: 1,
+                    fontWeight: 700,
+                    borderRadius: 2,
+                    boxShadow: "none",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Initialize Escrow
+                </Button>
+                <Button
+                  variant={activeTab === "withdraw" ? "contained" : "outlined"}
+                  color="primary"
+                  onClick={() => setActiveTab("withdraw")}
+                  sx={{
+                    flex: 1,
+                    fontWeight: 700,
+                    borderRadius: 2,
+                    boxShadow: "none",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Withdraw
+                </Button>
+              </Box>
+              {activeTab === "initialize" && (
+                <InitializeEscrowForm onInitialize={handleInitialize} />
+              )}
+              {activeTab === "withdraw" && (
+                <AccountLookup
+                  program={program}
+                  wallet={wallet}
+                  fiat={fiat}
+                  solPrice={solPrice}
+                />
+              )}
+              {wallet.connected && (
+                <div>Wallet: {wallet.publicKey?.toBase58()}</div>
+              )}
+            </div>
           </div>
-        </Box>
+          <div
+            style={{
+              position: "sticky",
+              bottom: 0,
+              left: 0,
+              width: "100%",
+              zIndex: 100,
+            }}
+          >
+            <Footer />
+          </div>
+        </div>
       </ConnectionProvider>
     </ThemeProvider>
   );
