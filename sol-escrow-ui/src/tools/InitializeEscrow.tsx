@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Box, TextField, Button } from "@mui/material";
+import { Box, TextField, Button, Typography } from "@mui/material";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 type Props = {
   onInitialize: (amount: number, takerInput: string) => Promise<void>;
@@ -7,8 +8,17 @@ type Props = {
 
 export default function InitializeEscrowForm({ onInitialize }: Props) {
   const [amount, setAmount] = useState<number>(0);
+  const [taker, setTaker] = useState<string>("");
   const [submitted, setSubmitted] = useState(false);
-  const [taker, setTaker] = useState("");
+  const wallet = useWallet();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!wallet.connected) return;
+    setSubmitted(true);
+    await onInitialize(amount, taker);
+    setSubmitted(false);
+  };
 
   return (
     <Box className="escrow-box" sx={{ maxWidth: 1200 }}>
@@ -17,15 +27,10 @@ export default function InitializeEscrowForm({ onInitialize }: Props) {
           display: "flex",
           flexDirection: "column",
           gap: 8,
-          maxWidth: 1100, // Even wider form
+          maxWidth: 1100,
           margin: "0 auto",
         }}
-        onSubmit={async (e) => {
-          e.preventDefault();
-          setSubmitted(false);
-          await onInitialize(amount, taker);
-          setSubmitted(true);
-        }}
+        onSubmit={handleSubmit}
       >
         <TextField
           label="Escrow Amount (lamports)"
@@ -73,9 +78,15 @@ export default function InitializeEscrowForm({ onInitialize }: Props) {
             py: 1,
             mt: 2,
           }}
+          disabled={!wallet.connected || submitted}
         >
           Initialize Escrow
         </Button>
+        {!wallet.connected && (
+          <Typography color="error" sx={{ mt: 2 }}>
+            Please connect your wallet to initialize escrow.
+          </Typography>
+        )}
         {submitted && <div>Escrow initialized!</div>}
       </form>
     </Box>
