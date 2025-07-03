@@ -13,6 +13,13 @@ import FiatSelector from "./tools/FiatSelector";
 
 import "./App.css";
 import { PublicKey } from "@solana/web3.js";
+import {
+  ThemeProvider,
+  createTheme,
+  CssBaseline,
+  IconButton,
+} from "@mui/material";
+import { Brightness4, Brightness7 } from "@mui/icons-material";
 
 const LOCALNET_RPC = "http://localhost:8899";
 
@@ -22,6 +29,19 @@ function App() {
 
   const [fiat, setFiat] = useState("USD");
   const [solPrice, setSolPrice] = useState<number | null>(null);
+
+  // Theme state
+  const [darkMode, setDarkMode] = useState(true);
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: darkMode ? "dark" : "light",
+        },
+      }),
+    [darkMode]
+  );
 
   const provider = useMemo(() => {
     if (
@@ -89,38 +109,51 @@ function App() {
   };
 
   return (
-    <ConnectionProvider endpoint={LOCALNET_RPC}>
-      <div>
-        <h1
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          Sol Escrow UI
-          <FiatSelector
-            fiat={fiat}
-            setFiat={setFiat}
-            solPrice={solPrice}
-            setSolPrice={setSolPrice}
-          />
-        </h1>
-        <WalletMultiButton />
-        <div className="escrow-container">
-          <InitializeEscrowForm onInitialize={handleInitialize} />
-          <AccountLookup
-            program={program}
-            wallet={wallet}
-            fiat={fiat}
-            solPrice={solPrice}
-          />
-          {wallet.connected && (
-            <div>Wallet: {wallet.publicKey?.toBase58()}</div>
-          )}
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <ConnectionProvider endpoint={LOCALNET_RPC}>
+        <div>
+          <h1
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            Sol Escrow UI
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <FiatSelector
+                fiat={fiat}
+                setFiat={setFiat}
+                solPrice={solPrice}
+                setSolPrice={setSolPrice}
+              />
+              <IconButton
+                onClick={() => setDarkMode((prev) => !prev)}
+                color="inherit"
+                aria-label="toggle dark mode"
+                size="large"
+              >
+                {darkMode ? <Brightness7 /> : <Brightness4 />}
+              </IconButton>
+            </div>
+          </h1>
+          <WalletMultiButton />
+          <div className="escrow-container">
+            <InitializeEscrowForm onInitialize={handleInitialize} />
+            <AccountLookup
+              program={program}
+              wallet={wallet}
+              fiat={fiat}
+              solPrice={solPrice}
+            />
+            {wallet.connected && (
+              <div>Wallet: {wallet.publicKey?.toBase58()}</div>
+            )}
+          </div>
         </div>
-      </div>
-    </ConnectionProvider>
+      </ConnectionProvider>
+    </ThemeProvider>
   );
 }
 
