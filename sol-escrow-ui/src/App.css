@@ -104,3 +104,11 @@ body:not(.dark) .MuiButton-contained:hover {
   color: #000 !important;
   border-color: #39ff14 !important;
 }
+
+/* Wallet Adapter modal background and text color for light mode */
+body:not(.dark) .wallet-adapter-modal-wrapper {
+  background: #f8f8ff !important;
+}
+body:not(.dark) .wallet-adapter-modal-title {
+  color: #000 !important;
+}

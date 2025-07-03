@@ -116,7 +116,7 @@ function App() {
             solPrice={solPrice}
             setSolPrice={setSolPrice}
           />
-          <WalletMultiButton />
+
           <div className="escrow-container">
             <InitializeEscrowForm onInitialize={handleInitialize} />
             <AccountLookup

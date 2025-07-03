@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Typography, IconButton } from "@mui/material";
 import { Brightness4, Brightness7 } from "@mui/icons-material";
 import FiatSelector from "../tools/FiatSelector";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 type Props = {
   darkMode: boolean;
@@ -63,6 +64,7 @@ const StyledHeader: React.FC<Props> = ({
       >
         {darkMode ? <Brightness7 /> : <Brightness4 />}
       </IconButton>
+      <WalletMultiButton />
     </Box>
   </Box>
 );
