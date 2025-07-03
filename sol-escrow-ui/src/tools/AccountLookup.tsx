@@ -2,7 +2,8 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Program, web3 } from "@coral-xyz/anchor";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 type Props = {
   program: Program | null;
@@ -88,6 +89,8 @@ const AccountWithdraw: React.FC<Props> = ({
   const fiatValue =
     solAmount !== null && solPrice !== null ? solAmount * solPrice : null;
 
+  const solWallet = useWallet();
+
   return (
     <Box className="escrow-box" sx={{ maxWidth: 1200 }}>
       <form
@@ -154,11 +157,21 @@ const AccountWithdraw: React.FC<Props> = ({
         <Button
           type="submit"
           fullWidth
-          disabled={withdrawLoading || !initializer || !derivedPda}
+          disabled={
+            withdrawLoading ||
+            !initializer ||
+            !derivedPda ||
+            !solWallet.connected
+          }
           sx={{ mt: 2, borderRadius: 2, fontWeight: 600, fontSize: 16, py: 1 }}
         >
-          {withdrawLoading ? "Withdrawing..." : "Withdraw"}
+          Withdraw
         </Button>
+        {!solWallet.connected && (
+          <Typography color="error" sx={{ mt: 2 }}>
+            Please connect your wallet to withdraw.
+          </Typography>
+        )}
         {withdrawError && (
           <div style={{ color: "red", marginTop: 8 }}>{withdrawError}</div>
         )}
