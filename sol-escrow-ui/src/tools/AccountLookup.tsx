@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Program, web3 } from "@coral-xyz/anchor";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
 
 type Props = {
   program: Program | null;
@@ -93,18 +95,25 @@ const AccountWithdraw: React.FC<Props> = ({
         handleWithdraw();
       }}
     >
-      <label htmlFor="initializer-public-key" style={{ marginTop: 16 }}>
-        Initializer Public Key
-      </label>
-      <input
-        id="initializer-public-key"
-        type="text"
+      <TextField
+        label="Initializer Public Key"
+        variant="outlined"
+        size="small"
+        fullWidth
         value={initializer}
         onChange={(e) => setInitializer(e.target.value)}
         placeholder="Enter initializer public key"
-        style={{ width: "100%", marginBottom: 8 }}
+        style={{ marginBottom: 12, marginTop: 16 }}
         disabled={withdrawLoading}
         required
+        InputProps={{
+          style: {
+            borderRadius: 8,
+            fontWeight: 500,
+            fontSize: 15,
+            background: "rgba(255,255,255,0.05)",
+          },
+        }}
       />
       {derivedPda && (
         <div style={{ marginTop: 8 }}>
@@ -134,13 +143,14 @@ const AccountWithdraw: React.FC<Props> = ({
           )}
         </div>
       )}
-      <button
+      <Button
         type="submit"
+        fullWidth
         disabled={withdrawLoading || !initializer || !derivedPda}
-        style={{ marginTop: 8 }}
+        sx={{ mt: 2, borderRadius: 2, fontWeight: 600, fontSize: 16 }}
       >
         {withdrawLoading ? "Withdrawing..." : "Withdraw"}
-      </button>
+      </Button>
       {withdrawError && (
         <div style={{ color: "red", marginTop: 8 }}>{withdrawError}</div>
       )}

@@ -77,6 +77,7 @@
   cursor: pointer !important;
   outline: none !important;
   margin-top: 8px !important;
+  font-family: "Detacher" !important;
 }
 body.dark .wallet-adapter-button,
 body.dark .wallet-adapter-button-trigger {
@@ -90,4 +91,8 @@ body.dark .wallet-adapter-button-trigger {
 body.dark .wallet-adapter-button:hover,
 body.dark .wallet-adapter-button-trigger:hover {
   background: #2a003f !important;
+}
+
+body {
+  font-family: "Detacher";
 }

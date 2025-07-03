@@ -13,7 +13,13 @@ import { getNeonTheme } from "./theme/neonTheme";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import "./App.css";
 import { PublicKey } from "@solana/web3.js";
-import { ThemeProvider, CssBaseline, IconButton, Button } from "@mui/material";
+import {
+  ThemeProvider,
+  CssBaseline,
+  IconButton,
+  Box,
+  Typography,
+} from "@mui/material";
 import { Brightness4, Brightness7 } from "@mui/icons-material";
 
 const LOCALNET_RPC = "http://localhost:8899";
@@ -108,16 +114,35 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <ConnectionProvider endpoint={LOCALNET_RPC}>
-        <div>
-          <h1
-            style={{
+        <Box sx={{ px: 2, py: 3 }}>
+          {/* Stylized Header */}
+          <Box
+            sx={{
               display: "flex",
-              justifyContent: "space-between",
               alignItems: "center",
+              justifyContent: "space-between",
+              mb: 4,
+              borderRadius: 3,
+              px: 3,
+              py: 2,
+              background: darkMode
+                ? "linear-gradient(90deg, #2a003f 0%, #1a1a2e 100%)"
+                : "linear-gradient(90deg, #eaffea 0%, #f8f8ff 100%)",
+              boxShadow: darkMode ? "0 0 24px #a259f7" : "0 0 16px #39ff14",
             }}
           >
-            Sol Escrow UI
-            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <Typography
+              variant="h4"
+              sx={{
+                fontWeight: 800,
+                letterSpacing: 1,
+                color: darkMode ? "#fff" : "#000", // White in dark, black in light
+                fontFamily: "Detacher",
+              }}
+            >
+              Sol Escrow
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <FiatSelector
                 fiat={fiat}
                 setFiat={setFiat}
@@ -132,8 +157,8 @@ function App() {
               >
                 {darkMode ? <Brightness7 /> : <Brightness4 />}
               </IconButton>
-            </div>
-          </h1>
+            </Box>
+          </Box>
           <WalletMultiButton />
           <div className="escrow-container">
             <InitializeEscrowForm onInitialize={handleInitialize} />
@@ -146,11 +171,8 @@ function App() {
             {wallet.connected && (
               <div>Wallet: {wallet.publicKey?.toBase58()}</div>
             )}
-            <Button type="submit" fullWidth>
-              Withdraw
-            </Button>
           </div>
-        </div>
+        </Box>
       </ConnectionProvider>
     </ThemeProvider>
   );

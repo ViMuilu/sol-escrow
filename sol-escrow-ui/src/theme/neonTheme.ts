@@ -5,6 +5,9 @@ export const getNeonTheme = (darkMode: boolean) =>
     palette: {
       mode: darkMode ? "dark" : "light",
     },
+    typography: {
+      fontFamily: "'Detacher'",
+    },
     components: {
       MuiButton: {
         styleOverrides: {

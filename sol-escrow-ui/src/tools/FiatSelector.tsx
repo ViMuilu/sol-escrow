@@ -1,4 +1,12 @@
 import React, { useEffect } from "react";
+import {
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+  Box,
+  Typography,
+} from "@mui/material";
 
 export const FIAT_OPTIONS = [
   { code: "USD", label: "US Dollar" },
@@ -41,27 +49,39 @@ const FiatSelector: React.FC<Props> = ({
   }, [fiat, setSolPrice]);
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <select
-        value={fiat}
-        onChange={(e) => setFiat(e.target.value)}
-        style={{ fontSize: 16, padding: "2px 8px" }}
-      >
-        {FIAT_OPTIONS.map((opt) => (
-          <option key={opt.code} value={opt.code}>
-            {opt.code}
-          </option>
-        ))}
-      </select>
-      <span style={{ fontSize: 14, color: "#888" }}>
+    <Box display="flex" alignItems="center" gap={2}>
+      <FormControl variant="outlined" size="small" sx={{ minWidth: 100 }}>
+        <InputLabel id="fiat-select-label">Fiat</InputLabel>
+        <Select
+          labelId="fiat-select-label"
+          value={fiat}
+          label="Fiat"
+          onChange={(e) => setFiat(e.target.value)}
+          sx={{
+            borderRadius: 2,
+            background: "rgba(255,255,255,0.05)",
+            fontWeight: 600,
+            "& .MuiSelect-icon": {
+              color: "inherit",
+            },
+          }}
+        >
+          {FIAT_OPTIONS.map((opt) => (
+            <MenuItem key={opt.code} value={opt.code}>
+              {opt.label} ({opt.code})
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <Typography variant="body2" color="text.secondary">
         {solPrice !== null
           ? `1 SOL ≈ ${solPrice.toLocaleString(undefined, {
               style: "currency",
               currency: fiat,
             })}`
           : "Loading..."}
-      </span>
-    </div>
+      </Typography>
+    </Box>
   );
 };
 
