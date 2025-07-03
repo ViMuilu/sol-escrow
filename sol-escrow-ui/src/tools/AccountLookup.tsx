@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Program, web3 } from "@coral-xyz/anchor";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import { Box } from "@mui/material";
 
 type Props = {
   program: Program | null;
@@ -88,76 +89,84 @@ const AccountWithdraw: React.FC<Props> = ({
     solAmount !== null && solPrice !== null ? solAmount * solPrice : null;
 
   return (
-    <form
-      style={{ maxWidth: 400, margin: "0 auto" }}
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleWithdraw();
-      }}
-    >
-      <TextField
-        label="Initializer Public Key"
-        variant="outlined"
-        size="small"
-        fullWidth
-        value={initializer}
-        onChange={(e) => setInitializer(e.target.value)}
-        placeholder="Enter initializer public key"
-        style={{ marginBottom: 12, marginTop: 16 }}
-        disabled={withdrawLoading}
-        required
-        InputProps={{
-          style: {
-            borderRadius: 8,
-            fontWeight: 500,
-            fontSize: 15,
-            background: "rgba(255,255,255,0.05)",
-          },
+    <Box className="escrow-box" sx={{ maxWidth: 1200 }}>
+      <form
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+          maxWidth: 1100,
+          margin: "0 auto",
         }}
-      />
-      {derivedPda && (
-        <div style={{ marginTop: 8 }}>
-          Escrow PDA: <code>{derivedPda}</code>
-        </div>
-      )}
-      {escrowAmount !== null && (
-        <div style={{ marginTop: 8 }}>
-          Escrow Amount:{" "}
-          <strong>
-            {solAmount?.toLocaleString(undefined, {
-              maximumFractionDigits: 9,
-            })}{" "}
-            SOL ({escrowAmount} lamports)
-          </strong>
-          {fiatValue !== null && (
-            <div style={{ marginTop: 4 }}>
-              ≈{" "}
-              <strong>
-                {fiatValue.toLocaleString(undefined, {
-                  style: "currency",
-                  currency: fiat,
-                  maximumFractionDigits: 2,
-                })}
-              </strong>
-            </div>
-          )}
-        </div>
-      )}
-      <Button
-        type="submit"
-        fullWidth
-        disabled={withdrawLoading || !initializer || !derivedPda}
-        sx={{ mt: 2, borderRadius: 2, fontWeight: 600, fontSize: 16 }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleWithdraw();
+        }}
       >
-        {withdrawLoading ? "Withdrawing..." : "Withdraw"}
-      </Button>
-      {withdrawError && (
-        <div style={{ color: "red", marginTop: 8 }}>{withdrawError}</div>
-      )}
-      {withdrawSuccess && (
-        <div style={{ color: "green", marginTop: 8 }}>{withdrawSuccess}</div>
-      )}
-    </form>
+        <TextField
+          label="Initializer Public Key"
+          variant="outlined"
+          size="small"
+          fullWidth
+          value={initializer}
+          onChange={(e) => setInitializer(e.target.value)}
+          placeholder="Enter initializer public key"
+          style={{ marginBottom: 12, marginTop: 16 }}
+          disabled={withdrawLoading}
+          required
+          InputProps={{
+            sx: (theme) => ({
+              fontSize: 20,
+              padding: "8px 12px",
+              borderRadius: 2,
+              background: theme.palette.mode === "dark" ? "#181824" : "#f8f8ff",
+            }),
+          }}
+        />
+        {derivedPda && (
+          <div style={{ marginTop: 8 }}>
+            Escrow PDA: <code>{derivedPda}</code>
+          </div>
+        )}
+        {escrowAmount !== null && (
+          <div style={{ marginTop: 8 }}>
+            Escrow Amount:{" "}
+            <strong>
+              {solAmount?.toLocaleString(undefined, {
+                maximumFractionDigits: 9,
+              })}{" "}
+              SOL ({escrowAmount} lamports)
+            </strong>
+            {fiatValue !== null && (
+              <div style={{ marginTop: 4 }}>
+                ≈{" "}
+                <strong>
+                  {fiatValue.toLocaleString(undefined, {
+                    style: "currency",
+                    currency: fiat,
+                    maximumFractionDigits: 2,
+                  })}
+                </strong>
+              </div>
+            )}
+          </div>
+        )}
+        <Button
+          type="submit"
+          fullWidth
+          disabled={withdrawLoading || !initializer || !derivedPda}
+          sx={{ mt: 2, borderRadius: 2, fontWeight: 600, fontSize: 16, py: 1 }}
+        >
+          {withdrawLoading ? "Withdrawing..." : "Withdraw"}
+        </Button>
+        {withdrawError && (
+          <div style={{ color: "red", marginTop: 8 }}>{withdrawError}</div>
+        )}
+        {withdrawSuccess && (
+          <div style={{ color: "green", marginTop: 8 }}>{withdrawSuccess}</div>
+        )}
+      </form>
+    </Box>
   );
 };
 

@@ -42,12 +42,17 @@
 }
 
 .escrow-container {
-  padding-top: 16px;
+  width: 100%;
+  max-width: 100vw;
+  min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 200px;
+  justify-content: flex-start;
+  /* Remove fixed padding and max-width if present */
+  background: transparent;
+  box-sizing: border-box;
 }
 
 .escrow-wallet-box {
@@ -111,4 +116,61 @@ body:not(.dark) .wallet-adapter-modal-wrapper {
 }
 body:not(.dark) .wallet-adapter-modal-title {
   color: #000 !important;
+}
+
+/* Input fields (TextField) background and border radius */
+.MuiOutlinedInput-root {
+  background: #f8f8ff !important; /* Light mode general background */
+  border-radius: 8px !important;
+}
+body.dark .MuiOutlinedInput-root {
+  background: #181824 !important; /* Dark mode general background */
+}
+
+/* Button background and color */
+.MuiButton-root {
+  background: #f8f8ff !important; /* Light mode general background */
+  color: #000 !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+}
+body.dark .MuiButton-root {
+  background: #181824 !important; /* Dark mode general background */
+  color: #fff !important;
+}
+
+/* Button hover states */
+body:not(.dark) .MuiButton-root:hover {
+  background: #baffc9 !important;
+  color: #000 !important;
+  border-color: #39ff14 !important;
+}
+body.dark .MuiButton-root:hover {
+  background: #23232b !important;
+  color: #fff !important;
+  border-color: #a259f7 !important;
+}
+
+/* Escrow form/box shared styling */
+.escrow-box {
+  width: 100%;
+  max-width: 1200px;
+  min-width: 320px;
+  margin: 32px auto;
+  background: #e0e0e0;
+  border: 2px solid #39ff14;
+  border-radius: 16px;
+  padding: 32px;
+  /* Match header underglow: softer neon */
+  box-shadow: 0 0 16px #39ff14;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  box-sizing: border-box;
+}
+
+body.dark .escrow-box {
+  background: #23232b;
+  border-color: #a259f7;
+  /* Match header underglow: softer purple */
+  box-shadow: 0 0 24px #a259f7;
 }

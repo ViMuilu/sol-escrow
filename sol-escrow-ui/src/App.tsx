@@ -1,4 +1,9 @@
-import { useMemo, useState, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { Box, Button, CssBaseline, ThemeProvider } from "@mui/material";
+import StyledHeader from "./components/StyledHeader";
+import InitializeEscrowForm from "./tools/InitializeEscrow";
+import AccountLookup from "./tools/AccountLookup";
+import { getNeonTheme } from "./theme/neonTheme";
 import {
   useWallet,
   useConnection,
@@ -6,14 +11,8 @@ import {
 } from "@solana/wallet-adapter-react";
 import { Program, AnchorProvider, web3, BN } from "@coral-xyz/anchor";
 import idl from "../../target/idl/sol_escrow.json";
-import AccountLookup from "./tools/AccountLookup";
-import InitializeEscrowForm from "./tools/InitializeEscrow";
-import { getNeonTheme } from "./theme/neonTheme";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import "./App.css";
 import { PublicKey } from "@solana/web3.js";
-import { ThemeProvider, CssBaseline, Box } from "@mui/material";
-import StyledHeader from "./components/StyledHeader";
+import "./App.css";
 
 const LOCALNET_RPC = "http://localhost:8899";
 
@@ -21,11 +20,14 @@ function App() {
   const { connection } = useConnection();
   const wallet = useWallet();
 
+  const [darkMode, setDarkMode] = useState(true);
   const [fiat, setFiat] = useState("USD");
   const [solPrice, setSolPrice] = useState<number | null>(null);
 
-  // Theme state
-  const [darkMode, setDarkMode] = useState(true);
+  // Tab selection: start with neither selected
+  const [activeTab, setActiveTab] = useState<"initialize" | "withdraw" | null>(
+    null
+  );
 
   const theme = useMemo(() => getNeonTheme(darkMode), [darkMode]);
 
@@ -116,15 +118,49 @@ function App() {
             solPrice={solPrice}
             setSolPrice={setSolPrice}
           />
-
+          {/* Tab Buttons */}
+          <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+            <Button
+              variant={activeTab === "initialize" ? "contained" : "outlined"}
+              color="primary"
+              onClick={() => setActiveTab("initialize")}
+              sx={{
+                flex: 1,
+                fontWeight: 700,
+                borderRadius: 2,
+                boxShadow: "none",
+                textTransform: "uppercase",
+              }}
+            >
+              Initialize Escrow
+            </Button>
+            <Button
+              variant={activeTab === "withdraw" ? "contained" : "outlined"}
+              color="primary"
+              onClick={() => setActiveTab("withdraw")}
+              sx={{
+                flex: 1,
+                fontWeight: 700,
+                borderRadius: 2,
+                boxShadow: "none",
+                textTransform: "uppercase",
+              }}
+            >
+              Withdraw
+            </Button>
+          </Box>
           <div className="escrow-container">
-            <InitializeEscrowForm onInitialize={handleInitialize} />
-            <AccountLookup
-              program={program}
-              wallet={wallet}
-              fiat={fiat}
-              solPrice={solPrice}
-            />
+            {activeTab === "initialize" && (
+              <InitializeEscrowForm onInitialize={handleInitialize} />
+            )}
+            {activeTab === "withdraw" && (
+              <AccountLookup
+                program={program}
+                wallet={wallet}
+                fiat={fiat}
+                solPrice={solPrice}
+              />
+            )}
             {wallet.connected && (
               <div>Wallet: {wallet.publicKey?.toBase58()}</div>
             )}
